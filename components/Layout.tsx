@@ -12,6 +12,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     window.location.hash = '/';
   };
 
+  const handleLogin = () => {
+    const email = prompt("Enter Admin Email Address:");
+    if (email) {
+      const success = login(email);
+      if (!success) {
+        alert("Access Denied: You do not have administrator privileges.");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -40,6 +50,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 >
                   Submit Request
                 </Link>
+                <Link
+                  to="/check-status"
+                  className={`${location.pathname === '/check-status' ? 'border-brand-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                >
+                  Check Status
+                </Link>
                 {isAuthenticated && (
                   <Link
                     to="/admin"
@@ -61,7 +77,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </button>
               ) : (
                  <button
-                  onClick={login}
+                  onClick={handleLogin}
                   className="ml-4 flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition"
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />

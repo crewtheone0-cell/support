@@ -9,7 +9,8 @@ interface TicketContextType {
   updateTicketDetails: (id: string, updates: Partial<Ticket>, adminName: string) => void;
   deleteTickets: (ids: string[]) => void;
   isAuthenticated: boolean;
-  login: () => void;
+  currentUser: { email: string; role: 'admin' | 'guest' } | null;
+  login: (email: string) => boolean;
   logout: () => void;
 }
 
@@ -25,13 +26,12 @@ export const useTickets = () => {
 
 export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [tickets, setTickets] = useState<Ticket[]>(INITIAL_TICKETS);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ email: string; role: 'admin' | 'guest' } | null>(null);
 
   const addTicket = (ticket: Ticket) => {
     setTickets(prev => [ticket, ...prev]);
     // Simulate notification
     if (ticket.aiPriority === TicketPriority.CRITICAL) {
-      // In a real app, this would trigger an email
       console.log(`[EMAIL ALERT] New CRITICAL ticket from ${ticket.customerName}`);
     }
   };
@@ -45,6 +45,12 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           actor: adminName,
           details: `Changed from ${t.status} to ${status}`
         };
+
+        // Simulate Email Notification on Resolve
+        if (status === TicketStatus.RESOLVED && t.status !== TicketStatus.RESOLVED) {
+          alert(`[System Notification]\n\nEmail sent to user (${t.email}):\n"Your ticket #${t.id} has been marked as RESOLVED. Please check your dashboard for details."`);
+        }
+
         return { ...t, status, updatedAt: new Date().toISOString(), history: [historyItem, ...t.history] };
       }
       return t;
@@ -75,8 +81,18 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setTickets(prev => prev.filter(t => !ids.includes(t.id)));
   };
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const login = (email: string) => {
+    // Specific Admin Access Check
+    if (email.toLowerCase() === 'kishanyadav@myyahoo.com') {
+      setCurrentUser({ email, role: 'admin' });
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => setCurrentUser(null);
+
+  const isAuthenticated = currentUser?.role === 'admin';
 
   return (
     <TicketContext.Provider value={{ 
@@ -86,6 +102,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       updateTicketDetails,
       deleteTickets,
       isAuthenticated, 
+      currentUser,
       login, 
       logout 
     }}>

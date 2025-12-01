@@ -24,9 +24,12 @@ const Home: React.FC = () => {
             Submit a Complaint
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
-          <button className="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition-all">
+          <Link
+            to="/check-status"
+            className="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition-all"
+          >
             Check Status
-          </button>
+          </Link>
         </div>
       </div>
 

@@ -139,9 +139,25 @@ const AdminDashboard: React.FC = () => {
 
   const handleSendResponse = () => {
     if (!activeTicket) return;
-    updateTicketDetails(activeTicket.id, { status: TicketStatus.RESOLVED }, 'Admin (Replied)');
-    // Simulate sending email
-    alert(`Response sent to ${activeTicket.email}`);
+    
+    // Simulate updating ticket with response sent action
+    updateTicketDetails(
+      activeTicket.id, 
+      { status: TicketStatus.RESOLVED }, // Auto-resolve on response? Or keep previous. Let's resolve.
+      'Admin'
+    );
+    
+    // We also want to explicitly log the email content sent
+    // We reuse updateTicketDetails just to trigger the history mechanism, 
+    // but in a real app this would be a separate "Add Note/Email" function.
+    // For now, let's just use the fact that updateTicketDetails adds history.
+    
+    alert(`[Simulated] Email sent to ${activeTicket.email}:\n\n"${responseDraft}"`);
+    
+    // Refetch/Update active ticket to show new history immediately is handled by local state trick or useEffect
+    // But since tickets comes from context, activeTicket needs to be synced if we want to see the history immediately in modal
+    // We'll close modal for simplicity or rely on the sync.
+    
     setActiveTicket(null);
   };
   
@@ -409,7 +425,7 @@ const AdminDashboard: React.FC = () => {
                             )}
                             <div className="mt-3 flex justify-end">
                                 <button onClick={handleSendResponse} className="bg-brand-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-brand-700 transition flex items-center shadow-sm">
-                                    <Send size={16} className="mr-2" /> Send Response
+                                    <Send size={16} className="mr-2" /> Send Response (Email)
                                 </button>
                             </div>
                         </div>
